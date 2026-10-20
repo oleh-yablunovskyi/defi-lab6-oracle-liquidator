@@ -5,6 +5,10 @@
   "private": true,
   "license": "MIT",
   "type": "module",
+  "scripts": {
+    "bot": "node bot/liquidator.ts",
+    "new-bot-wallet": "node bot/new-wallet.ts"
+  },
   "dependencies": {
     "@chainlink/contracts": "^1.5.0",
     "@openzeppelin/contracts": "^5.6.1"
