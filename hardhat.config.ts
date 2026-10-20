@@ -4,6 +4,9 @@ import { defineConfig } from "hardhat/config";
 export default defineConfig({
   plugins: [hardhatToolboxMochaEthersPlugin],
   solidity: {
+    // The price feed mock of Chainlink for the tests and for a plain local node, where there is
+    // no real feed. None of the contracts imports it, so it is compiled from the npm package.
+    npmFilesToBuild: ["@chainlink/contracts/src/v0.8/shared/mocks/MockV3Aggregator.sol"],
     profiles: {
       // The optimizer is on in the default profile too, so the tests, the scripts and the
       // deployment to Sepolia all use the same bytecode. Sepolia charges for every byte of
