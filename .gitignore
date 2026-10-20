@@ -1,0 +1,24 @@
+# Node modules
+node_modules/
+
+# Compilation output
+dist/
+
+# Hardhat build artifacts, cache and generated types
+artifacts/
+cache/
+types/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Contract addresses written by scripts/deploy.ts
+deployments/
+
+# Lab report, kept outside the repository
+report/
+
+# macOS
+.DS_Store
