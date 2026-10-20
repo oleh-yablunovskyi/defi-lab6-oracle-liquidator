@@ -103,4 +103,38 @@ contract StableEngine {
         uint256 userHealthFactor = getHealthFactor(user);
         require(userHealthFactor >= MIN_HEALTH_FACTOR, "Health factor is broken (under 1.0)");
     }
+
+    function liquidate(address user) external {
+        uint256 userHealthFactor = getHealthFactor(user);
+        require(userHealthFactor < MIN_HEALTH_FACTOR, "Health factor is ok");
+
+        uint256 debtToCover = sUsdMinted[user];
+
+        // Amount of collateral (ETH) worth the whole debt
+        uint256 collateralToReward = (debtToCover * 1e18) / getUsdValue(1e18);
+
+        // Add the 10% bonus
+        uint256 totalCollateralToReward = collateralToReward + ((collateralToReward * LIQUIDATION_BONUS) / 100);
+
+        require(collateralDeposited[user] >= totalCollateralToReward, "Not enough collateral to liquidate");
+
+        // Take the sUSD from the liquidator and burn them to repay the debt
+        sUsd.burn(msg.sender, debtToCover);
+        sUsdMinted[user] = 0;
+
+        // Take the collateral from the debtor and send it to the liquidator
+        collateralDeposited[user] -= totalCollateralToReward;
+        payable(msg.sender).transfer(totalCollateralToReward);
+
+        emit Liquidated(user, msg.sender, debtToCover);
+    }
+
+    // LAB ONLY, never in a real protocol: a temporary backdoor without any access control.
+    // The function artificially reduces the user's collateral in the registry without paying
+    // anything out. It is used only to push the health factor below 1.0
+    // and make the liquidator bot act.
+    function reduceCollateralForTesting(address user, uint256 amount) external {
+        require(collateralDeposited[user] >= amount, "Amount exceeds balance");
+        collateralDeposited[user] -= amount;
+    }
 }
