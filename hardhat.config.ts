@@ -58,9 +58,10 @@ export default defineConfig({
     },
     // A local fork of Sepolia for a rehearsal: `npx hardhat node --network sepoliaFork` starts a
     // node on http://127.0.0.1:8545 that reads Sepolia state, the Chainlink feed among it, as of
-    // the latest block; the scripts reach it as "localhost". Transactions run only on this node
-    // and never reach Sepolia. The "amsterdam" hardfork is the Glamsterdam upgrade that Sepolia
-    // runs, so the gas costs on the fork are close to the real ones.
+    // a recent block (Hardhat stays a little behind the head of the chain, which can still be
+    // reorganized); the scripts reach it as "localhost". Transactions run only on this node and
+    // never reach Sepolia. The "amsterdam" hardfork is the Glamsterdam upgrade that Sepolia runs,
+    // so the gas costs on the fork are close to the real ones.
     sepoliaFork: {
       type: "edr-simulated",
       chainType: "l1",
