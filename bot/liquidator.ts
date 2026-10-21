@@ -64,7 +64,7 @@ const sleep = (seconds: number) => new Promise((done) => setTimeout(done, second
 // how much more `value` is than `debt`, in percent rounded to two decimals
 const premium = (debt: bigint, value: bigint) => `${formatUnits(((value - debt) * 10000n + debt / 2n) / debt, 2)}%`;
 
-// A read at a given block. A public endpoint balances requests over several nodes, and the one
+// A read at a given block. A public endpoint may balance requests over several nodes, and the one
 // that answers may not have the block of a fresh receipt yet, so a failed read is retried.
 async function atBlock<T>(read: (blockTag: number) => Promise<T>, blockTag: number): Promise<T> {
   for (let attempt = 1; ; attempt++) {

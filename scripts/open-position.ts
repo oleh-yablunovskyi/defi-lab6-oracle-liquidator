@@ -19,6 +19,11 @@ const { ethers, networkName } = await network.create();
 const { formatEther, formatUnits, parseEther } = ethers;
 const { chainId } = await ethers.provider.getNetwork();
 const onSepolia = chainId === SEPOLIA_CHAIN_ID;
+// On Sepolia the scripts wait for one more block after the block that includes a transaction:
+// a public endpoint may balance requests over several nodes, and the reads that follow must not
+// reach a node that has not seen the transaction yet. A local node mines only on demand, so
+// there a single block is all there is.
+const CONFIRMATIONS = onSepolia ? 2 : 1;
 
 const file = `deployments/${networkName}.json`;
 if (!existsSync(file)) throw new Error(`No ${file}, run scripts/deploy.ts first`);
@@ -44,7 +49,7 @@ function printReceipt(label: string, receipt: TransactionReceipt) {
 }
 
 async function send(label: string, response: Promise<ContractTransactionResponse | TransactionResponse>) {
-  printReceipt(label, (await (await response).wait()) as TransactionReceipt);
+  printReceipt(label, (await (await response).wait(CONFIRMATIONS)) as TransactionReceipt);
 }
 
 async function position() {

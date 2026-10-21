@@ -19,6 +19,11 @@ const { ethers, networkName } = await network.create();
 const { formatEther, formatUnits } = ethers;
 const { chainId } = await ethers.provider.getNetwork();
 const onSepolia = chainId === SEPOLIA_CHAIN_ID;
+// On Sepolia the scripts wait for one more block after the block that includes a transaction:
+// a public endpoint may balance requests over several nodes, and the reads that follow must not
+// reach a node that has not seen the transaction yet. A local node mines only on demand, so
+// there a single block is all there is.
+const CONFIRMATIONS = onSepolia ? 2 : 1;
 
 const file = `deployments/${networkName}.json`;
 if (!existsSync(file)) throw new Error(`No ${file}, run scripts/deploy.ts first`);
@@ -62,7 +67,7 @@ console.log(`       health factor after the cut: ${formatEther(forecast)}`);
 console.log(`       liquidation possible from ${formatEther(lowest)} up to 1.0`);
 if (cut <= 0n || forecast >= ONE || forecast < lowest) throw new Error("The cut does not give a liquidatable position");
 
-const receipt = (await (await engine.reduceCollateralForTesting(debtor, cut)).wait()) as TransactionReceipt;
+const receipt = (await (await engine.reduceCollateralForTesting(debtor, cut)).wait(CONFIRMATIONS)) as TransactionReceipt;
 deployment.transactions["StableEngine.reduceCollateralForTesting"] = receipt.hash;
 console.log(`[Tx] StableEngine.reduceCollateralForTesting: ${receipt.hash}`);
 console.log(`     block ${receipt.blockNumber}, status ${receipt.status}, gas used ${receipt.gasUsed}, ` +
