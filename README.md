@@ -43,7 +43,8 @@ Sepolia, which reads the real feed but never sends anything to Sepolia.
 
 Node.js 22.18 or newer, which runs TypeScript files directly (checked with Node.js 22.22.2 and
 npm 11.14.0). `npm install` also installs `@chainlink/contracts`, which brings about 200 packages
-of its own tooling; the project compiles only two Solidity files from it.
+of its own tooling; the project compiles only four Solidity files from it: `AggregatorV3Interface.sol`
+and `MockV3Aggregator.sol` with the two interfaces the mock imports.
 
 ## Tests
 
